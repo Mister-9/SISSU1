@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_offer"
+            android:icon="@drawable/offers"
+            android:title="@string/offers" />
+        <item
+            android:id="@+id/nav_addInvoice"
+            android:icon="@drawable/add"
+            android:title="@string/add_invoice_text" />
+        <item
+            android:id="@+id/nav_currentInvoioce"
+            android:icon="@drawable/current"
+            android:title="@string/current_invoice" />
+        <item
+            android:id="@+id/nav_pastInvoice"
+            android:icon="@drawable/past"
+            android:title="@string/past_invoices" />
+        <item
+            android:id="@+id/nav_share"
+            android:icon="@drawable/ic_menu_share"
+            android:title="@string/share" />
+        <item
+            android:id="@+id/nav_feedback"
+            android:icon="@drawable/feedback"
+            android:title="@string/feedback" />
+    </group>
+
+</menu>

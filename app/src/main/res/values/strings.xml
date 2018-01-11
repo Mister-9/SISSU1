@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">SISSU</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="user_name">User Name</string>
+    <string name="usermail_mail">usermail@mail.com</string>
+    <string name="add_invoice_text">Add Invoice</string>
+    <string name="offers">Offers</string>
+    <string name="current_invoice">Current Invoice</string>
+    <string name="past_invoices">Past Invoices</string>
+    <string name="feedback">Feedback</string>
+    <string name="share">Share</string>
+    <string name="communicate">Communicate</string>
+
+
+    <integer name="viewfinder_border_width">4</integer>
+    <integer name="viewfinder_border_length">60</integer>
+</resources>
