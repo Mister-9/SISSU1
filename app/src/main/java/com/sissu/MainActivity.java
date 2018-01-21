@@ -8,10 +8,14 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -27,14 +31,30 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import android.widget.VideoView;
 
+import com.bumptech.glide.Glide;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    private RecyclerView offerRecyclerView;
+    private OfferAdapter adapter;
+    private List<Offer> offerList;
+    private static String url = "http://starlord.hackerearth.com/studio";
     View contentMain, contentAddInvoice, contentCurrentInvoice, contentPastInvoice, contentShare, contentFeedback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
         contentMain = findViewById(R.id.app_bar_main);
         contentAddInvoice = findViewById(R.id.app_bar_addInvoice);
         contentCurrentInvoice = findViewById(R.id.app_bar_currentInvoice);
@@ -53,8 +73,53 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
+        // Getting JSON from URL
+        //  JSONObject json = getJSONFromUrl(url);
 
+        offerRecyclerView = findViewById(R.id.offer_card_view);
+
+        offerList = new ArrayList<>();
+        adapter = new OfferAdapter(this, offerList);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
+        offerRecyclerView.setLayoutManager(mLayoutManager);
+        offerRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        offerRecyclerView.setAdapter(adapter);
+        // prepareSongs();
+      /*  try {
+            prepareSongs(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+       */
+        try {
+            Glide.with(this).load(R.drawable.offers).into((ImageView) findViewById(R.id.offer_image));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            /*TextView tson=(TextView)findViewById(R.id.json);
+            tson.setText(loadJSONFromAsset());
+            Toast.makeText(this,loadJSONFromAsset(),Toast.LENGTH_SHORT).show();
+            JSONObject jsnobject = new JSONObject(loadJSONFromAsset());
+            */
+            if(loadJSONFromAsset()==null)
+            {}
+            else{
+            JSONObject jsonResponse = new JSONObject(loadJSONFromAsset());
+            JSONArray cast = jsonResponse.getJSONArray("offers");
+            for (int i=0; i<cast.length(); i++) {
+                Toast.makeText(this, "here", Toast.LENGTH_SHORT).show();
+                JSONObject actor = cast.getJSONObject(i);
+                String offer_value = actor.getString("offer_image");
+                Offer offers = new Offer(offer_value);
+                offerList.add(offers);
+            }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -215,5 +280,21 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public String loadJSONFromAsset() {
+        String json = null;
+        try {
+            InputStream is = getApplication().getAssets().open("data.json");
+            int size = is.available();
+            byte[] buffer = new byte[size];
+            is.read(buffer);
+            is.close();
+            json = new String(buffer, "UTF-8");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            Toast.makeText(this,"Stucked here...........",Toast.LENGTH_SHORT).show();
+            return json;
+        }
+        return json;
     }
 }
