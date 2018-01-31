@@ -1,37 +1,25 @@
 package com.sissu;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.StrictMode;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.WindowManager;
-import android.widget.Button;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
-import android.widget.VideoView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,6 +41,12 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Intent inent = new Intent(this, LoginActivity.class);
+
+        // calling an activity using <intent-filter> action name
+        //  Intent inent = new Intent("com.hmkcode.android.ANOTHER_ACTIVITY");
+
+        //startActivity(inent);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         contentMain = findViewById(R.id.app_bar_main);
@@ -84,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 1);
         offerRecyclerView.setLayoutManager(mLayoutManager);
         offerRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        offerRecyclerView.setNestedScrollingEnabled(false);
         offerRecyclerView.setAdapter(adapter);
         // prepareSongs();
       /*  try {
@@ -109,7 +104,7 @@ public class MainActivity extends AppCompatActivity
             JSONObject jsonResponse = new JSONObject(loadJSONFromAsset());
             JSONArray cast = jsonResponse.getJSONArray("offers");
             for (int i=0; i<cast.length(); i++) {
-                Toast.makeText(this, "here", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(this, "here", Toast.LENGTH_SHORT).show();
                 JSONObject actor = cast.getJSONObject(i);
                 String offer_value = actor.getString("offer_image");
                 Offer offers = new Offer(offer_value);

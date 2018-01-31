@@ -56,7 +56,7 @@ public class OfferAdapter extends RecyclerView.Adapter<OfferAdapter.MyViewHolder
         }
 
         // loading Offer offer_image using Glide library
-        Glide.with(offerContext).load(Offer.getOfferImage()).into(holder.offer_image);
+        Glide.with(offerContext).load(Offer.getOfferImage()).override(750,600).into(holder.offer_image);
     }
 
     @Override
