@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SISSU.iml" filepath="$PROJECT_DIR$/SISSU.iml" />
+      <module fileurl="file://F:\SISSU-master\SISSU.iml" filepath="F:\SISSU-master\SISSU.iml" />
       <module fileurl="file://E:\final year project\SISSU-master\SISSU\SISSU.iml" filepath="E:\final year project\SISSU-master\SISSU\SISSU.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SISSU-master.iml" filepath="$PROJECT_DIR$/SISSU-master.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://E:\final year project\SISSU-master\SISSU\app\app.iml" filepath="E:\final year project\SISSU-master\SISSU\app\app.iml" />
     </modules>

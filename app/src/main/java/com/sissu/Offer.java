@@ -1,8 +1,5 @@
 package com.sissu;
 
-/**
- * Created by bhavi on 20-01-2018.
- */
 public class Offer {
     private String offer_image;
     public Offer()
