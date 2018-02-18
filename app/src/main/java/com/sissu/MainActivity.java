@@ -39,15 +39,17 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    final int REQUEST_CODE = 100;
+    final int REQUEST_CODE_PRODUCT = 100;
+    final int REQUEST_CODE_MARKET = 99;
     final int PERMISSION_REQUEST = 200;
     Button scanbtn;
     TextView result;
     TextView DBresult;
     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
     DatabaseReference mRootReference = firebaseDatabase.getReference();
-    DatabaseReference mChildReference = mRootReference.child("message");
+    DatabaseReference mChildReference = mRootReference.child("0");
     View contentMain, contentAddInvoice, contentCurrentInvoice, contentPastInvoice, contentShare, contentFeedback;
+    String marketRoot;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,10 +57,10 @@ public class MainActivity extends AppCompatActivity
         initToolbar();
         scanBarcode();
         Intent inent = new Intent(this, LoginActivity.class);
-
         int request_code=109;
-        startActivityForResult(inent,request_code);
-
+        //startActivityForResult(inent,request_code);
+//        Intent intent = new Intent(MainActivity.this, ScanActivity.class);
+        //      startActivityForResult(intent, REQUEST_CODE_MARKET);
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
         try {
@@ -68,7 +70,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
     private void initViews() throws JSONException {
-        RecyclerView recyclerView = (RecyclerView)findViewById(R.id.offer_card_view);
+        RecyclerView recyclerView = findViewById(R.id.offer_card_view);
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
@@ -102,22 +104,22 @@ public class MainActivity extends AppCompatActivity
         contentShare = findViewById(R.id.app_bar_share);
         contentFeedback = findViewById(R.id.app_bar_feedback);
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+        Toolbar toolbar = findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
     public void scanBarcode(){
-        scanbtn = (Button) findViewById(R.id.scanbtn);
-        result = (TextView) findViewById(R.id.result);
-        DBresult = (TextView) findViewById(R.id.dbresult);
+        scanbtn = findViewById(R.id.scanbtn);
+        result = findViewById(R.id.result);
+        DBresult = findViewById(R.id.dbresult);
         DBresult.setText("output of barcode");
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
         {
@@ -127,14 +129,26 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, ScanActivity.class);
-                startActivityForResult(intent, REQUEST_CODE);
+                startActivityForResult(intent, REQUEST_CODE_MARKET);
             }
         });
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK)
+        if (requestCode == REQUEST_CODE_MARKET && resultCode == RESULT_OK) {
+            if (data != null) {
+                final Barcode barcode = data.getParcelableExtra("barcode");
+                mChildReference = mRootReference.child(barcode.displayValue).child("name");
+                result.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        //                      result.setText(mChildReference.toString());
+                    }
+                });
+            }
+        }
+        if (requestCode == REQUEST_CODE_PRODUCT && resultCode == RESULT_OK)
         {
             if (data != null)
             {
@@ -142,12 +156,13 @@ public class MainActivity extends AppCompatActivity
                 result.post(new Runnable() {
                     @Override
                     public void run() {
-                        result.setText(barcode.displayValue);
+//                         result.setText(barcode.displayValue+mChildReference.toString());
+                        //                       result.setText(barcode.displayValue);
                     }
                 });
             }
         }
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE_PRODUCT) {
             if (data.hasExtra("returnKey1")) {
                 Toast.makeText(this, data.getExtras().getString("returnKey1"),
                         Toast.LENGTH_SHORT).show();
@@ -162,7 +177,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 String message = dataSnapshot.getValue(String.class);
-                DBresult.setText(message);
+                if (message == null)
+                    message = "your home";
+                DBresult.setText("You are at " + message);
             }
 
             @Override
@@ -174,7 +191,7 @@ public class MainActivity extends AppCompatActivity
     }
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -218,15 +235,15 @@ public class MainActivity extends AppCompatActivity
             contentShare.setVisibility(View.GONE);
             contentFeedback.setVisibility(View.GONE);
             contentMain.setVisibility(View.VISIBLE);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_main);
+            Toolbar toolbar = findViewById(R.id.toolbar_main);
             toolbar.setTitle("Offers");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else if (id == R.id.nav_addInvoice) {
             //alert activity
@@ -236,15 +253,15 @@ public class MainActivity extends AppCompatActivity
             contentPastInvoice.setVisibility(View.GONE);
             contentMain.setVisibility(View.GONE);
             contentAddInvoice.setVisibility(View.VISIBLE);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_addInvoice);
+            Toolbar toolbar = findViewById(R.id.toolbar_addInvoice);
             toolbar.setTitle("New Invoice");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         } else if (id == R.id.nav_currentInvoioce) {
             //contact_activity
@@ -254,16 +271,16 @@ public class MainActivity extends AppCompatActivity
             contentPastInvoice.setVisibility(View.GONE);
             contentShare.setVisibility(View.GONE);
             contentCurrentInvoice.setVisibility(View.VISIBLE);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_currentInvoice);
+            Toolbar toolbar = findViewById(R.id.toolbar_currentInvoice);
             toolbar.setTitle("Current Invoice");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -275,15 +292,15 @@ public class MainActivity extends AppCompatActivity
             contentShare.setVisibility(View.GONE);
             contentAddInvoice.setVisibility(View.GONE);
             contentPastInvoice.setVisibility(View.VISIBLE);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_pastInvoice);
+            Toolbar toolbar = findViewById(R.id.toolbar_pastInvoice);
             toolbar.setTitle("Past Invoices");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -295,16 +312,16 @@ public class MainActivity extends AppCompatActivity
             contentPastInvoice.setVisibility(View.GONE);
             contentCurrentInvoice.setVisibility(View.GONE);
             contentShare.setVisibility(View.VISIBLE);
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_share);
+            Toolbar toolbar = findViewById(R.id.toolbar_share);
             toolbar.setTitle("Share");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
 
         } else if (id == R.id.nav_feedback) {
@@ -316,20 +333,20 @@ public class MainActivity extends AppCompatActivity
             contentPastInvoice.setVisibility(View.GONE);
             contentFeedback.setVisibility(View.VISIBLE);
 
-            Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_feedback);
+            Toolbar toolbar = findViewById(R.id.toolbar_feedback);
             toolbar.setTitle("Feedback");
             //toolbar control
-            DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+            DrawerLayout drawer = findViewById(R.id.drawer_layout);
             ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                     this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
             drawer.addDrawerListener(toggle);
             toggle.syncState();
 
-            NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+            NavigationView navigationView = findViewById(R.id.nav_view);
             navigationView.setNavigationItemSelectedListener(this);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

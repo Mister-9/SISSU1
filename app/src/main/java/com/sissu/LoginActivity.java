@@ -25,15 +25,11 @@ import com.google.android.gms.common.api.ResultCallback;
 
 import java.util.concurrent.Callable;
 
-/**
- * Created by bhavi on 26-01-2018.
- */
-
 public class LoginActivity extends AppCompatActivity {
+    private static final int RC_SIGN_IN = 9001;
     private LoginButton mFacebookSignInButton;
     private CallbackManager mFacebookCallbackManager;
     private SignInButton mGoogleSignInButton;
-    private static final int RC_SIGN_IN = 9001;
     private GoogleApiClient mGoogleApiClient;
 
     @Override
@@ -46,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         // This MUST be placed after the above two lines.
         setContentView(R.layout.activity_login);
 
-        mGoogleSignInButton = (SignInButton)findViewById(R.id.google_sign_in_button);
+        mGoogleSignInButton = findViewById(R.id.google_sign_in_button);
         mGoogleSignInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -54,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        mFacebookSignInButton = (LoginButton)findViewById(R.id.facebook_sign_in_button);
+        mFacebookSignInButton = findViewById(R.id.facebook_sign_in_button);
         mFacebookSignInButton.registerCallback(mFacebookCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -138,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
             mFacebookCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
     private void handleSignInResult(GoogleSignInResult result) {
-        ImageView userImage=(ImageView)findViewById(R.id.image_userImage);
+        ImageView userImage = findViewById(R.id.image_userImage);
         if (result.isSuccess()) {
             // Signed in successfolly, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
@@ -158,11 +154,9 @@ public class LoginActivity extends AppCompatActivity {
         try {
             OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
             if (opr.isDone()) {
-
                 GoogleSignInResult result = opr.get();
                 handleSignInResult(result);
             } else {
-
                 opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
                     @Override
                     public void onResult(GoogleSignInResult googleSignInResult) {
